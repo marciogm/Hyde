@@ -335,26 +335,23 @@ user"
 (defun hyde/new-post (title)
   "Creates a new post"
   (interactive "MEnter post title: ")
-  (let ((post-file-name (expand-file-name (format "%s/%s/%s.markdown" 
+  (let ((post-file-name (expand-file-name (format "%s/%s/%s.org" 
                                                   hyde-home hyde-drafts-dir (concat 
                                                                              (downcase (replace-regexp-in-string " " "_" title))))))
         (hyde-buffer (current-buffer)))
     (save-excursion
       (find-file post-file-name)
-      (insert "---\n")
-      (insert "layout: post\n")
-      (insert (format "title: \"%s\"\n" title))
+      (insert (format "#+TITLE: %s\n" title))
+      (insert "#+LAYOUT: post\n")
+      (insert "#+OPTIONS: f:t\n")
       (dolist (l hyde-custom-params)
-	(insert (format "%s: %s\n"
-			(first l)
-			(eval (second l)))))
-      (insert "---\n\n")
+        (insert (format "%s: %s\n"
+                        (first l)
+                        (eval (second l)))))
+
       (save-buffer))
     (hyde/hyde-add-file post-file-name)
-    (find-file post-file-name)
-
-     ;; hyde-home not available in markdown buffer (FIXME)
-    (hyde-markdown-activate-mode hyde-buffer)))
+    (find-file post-file-name)))
 
 (defun hyde/delete-post (pos)
   (interactive "d")
